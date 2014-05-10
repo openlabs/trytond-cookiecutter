@@ -3,8 +3,9 @@
     "email": "info@openlabs.co.in",
     "website": "http://www.openlabs.co.in/",
     "module_name": "module_name",
+    "module_prefix": "trytond",
     "description": "",
-    "repo_name": "module_name",
+    "repo_name": "module-name",
     "version": "3.0.1",
     "year": "2014"
 }

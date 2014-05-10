@@ -27,22 +27,25 @@ class PostgresTest(Command):
         pass
 
     def run(self):
-        from trytond.config import CONFIG
-        CONFIG['db_type'] = 'postgresql'
-        CONFIG['db_host'] = 'localhost'
-        CONFIG['db_port'] = 5432
-        CONFIG['db_user'] = 'postgres'
+        # Set timezone in environment.
+        os.environ['TZ'] = 'UTC'
 
-        from trytond import backend
+        def set_config():
+            from trytond.config import CONFIG
+            CONFIG['db_type'] = 'postgresql'
+            CONFIG['db_host'] = 'localhost'
+            CONFIG['db_port'] = 5432
+            CONFIG['db_user'] = 'postgres'
+
+        from trytond.backend.postgresql import Database
         import trytond.tests.test_tryton
 
-        # Set the db_type again because test_tryton writes this to sqlite
-        # again
-        CONFIG['db_type'] = 'postgresql'
+        # Needed for the database loader to load correctly
+        set_config()
 
         trytond.tests.test_tryton.DB_NAME = 'test_' + str(int(time.time()))
         from trytond.tests.test_tryton import DB_NAME
-        trytond.tests.test_tryton.DB = backend.get('Database')(DB_NAME)
+        trytond.tests.test_tryton.DB = Database(DB_NAME)
         from trytond.pool import Pool
         Pool.test = True
         trytond.tests.test_tryton.POOL = Pool(DB_NAME)
@@ -69,7 +72,8 @@ requires = []
 
 MODULE2PREFIX = {}
 
-
+MODULE = "{{ cookiecutter.module_name }}"
+PREFIX = "{{ cookiecutter.module_prefix }}"
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res|webdav)(\W|$)', dep):
         requires.append(
@@ -85,19 +89,19 @@ requires.append(
     )
 )
 setup(
-    name="{{ cookiecutter.module_name }}",
+    name='%s_%s' % (PREFIX, MODULE),
     version=info.get('version', '0.0.1'),
     description="{{ cookiecutter.description }}",
     author="{{ cookiecutter.author }}",
-    author_email="{{ cookiecutter.email }}",
-    url="{{ cookiecutter.website }}",
-    package_dir={'trytond.modules.{{ cookiecutter.module_name }}': '.'},
+    author_email='{{ cookiecutter.email }}',
+    url='{{ cookiecutter.website }}',
+    package_dir={'trytond.modules.%s' % MODULE: '.'},
     packages=[
-        'trytond.modules.{{ cookiecutter.module_name }}',
-        'trytond.modules.{{ cookiecutter.module_name }}.tests',
+        'trytond.modules.%s' % MODULE,
+        'trytond.modules.%s.tests' % MODULE,
     ],
     package_data={
-        'trytond.modules.{{ cookiecutter.module_name }}': info.get('xml', [])
+        'trytond.modules.%s' % MODULE: info.get('xml', [])
         + info.get('translation', [])
         + ['tryton.cfg', 'locale/*.po', 'tests/*.rst', 'reports/*.odt']
         + ['view/*.xml'],
@@ -118,11 +122,9 @@ setup(
     zip_safe=False,
     entry_points="""
     [trytond.modules]
-    {{ cookiecutter.module_name }} = trytond.modules.{{ cookiecutter.module_name }}
-    """,
+    %s = trytond.modules.%s
+    """ % (MODULE, MODULE),
     test_suite='tests',
     test_loader='trytond.test_loader:Loader',
-    cmdclass={
-        'test_on_postgres': PostgresTest,
-    }
+    cmdclass={'test_on_postgres': PostgresTest}
 )
