@@ -1,7 +1,13 @@
 trytond-cookiecutter
 ====================
 
-Cookiecutter template for a Tryton module.
+Cookiecutter template for a Tryton module boilerplate.
+
+Features
+--------
+
+* Support for Continous Integration using Travis
+* Includes test cases boilerplate
 
 
 Installation
@@ -14,8 +20,8 @@ From PyPI using pip::
     pip install cookiecutter
 
 
-How to generate tryton module
------------------------------
+How to generate tryton module boilerplate
+------------------------------------------
 
 To generate a tryton module::
 
