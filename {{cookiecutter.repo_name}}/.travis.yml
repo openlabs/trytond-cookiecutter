@@ -1,15 +1,11 @@
 language: python
 python:
   - 2.7
-install:
-  - CFLAGS=-O0 pip install lxml
-  - pip install -r dev_requirements.txt
-  - pip install tox
-script: tox
+script: make test-$TEST_CMD
 env:
-  - TOXENV=py27sqlite
-  - TOXENV=py27pg
-  - TOXENV=flake8
+  - TEST_CMD="sqlite"
+  - TEST_CMD="postgres"
+  - TEST_CMD="flake8"
 notifications:
   email:
   - ci-notify@openlabs.co.in
