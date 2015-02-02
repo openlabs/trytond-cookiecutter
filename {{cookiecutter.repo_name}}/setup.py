@@ -129,6 +129,7 @@ setup(
         'Framework :: Tryton',
         'Topic :: Office/Business',
     ],
+    long_description=open('README.md').read(),
     license='GPL-3',
     install_requires=requires,
     zip_safe=False,
